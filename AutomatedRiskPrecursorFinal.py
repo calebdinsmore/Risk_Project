@@ -5,7 +5,9 @@ import P1
 import P2
 import P3
 import P4
-
+#modnames = ['P1', 'P2', 'P3', 'P4']
+#playerModuleNames = map(__import__, modnames)
+#print(playerModuleNames)
 
 countryD={
     "Alaska":{"loc":[-372,161],"owner":0},
@@ -138,6 +140,7 @@ def getPlayerCountryList(player):
 def armyPlacement(player,t,phase):
     if playerD[player]["armies"]>0:
         country,numberOfArmiesToPlace=eval("P"+str(player)).placeArmies(player,countryD,bookArmiesBonusList,{player:playerD[player]})
+        #country,numberOfArmiesToPlace=playerModuleNames[player-1].placeArmies(player,countryD,bookArmiesBonusList,{player:playerD[player]})
         countryD[country]["armies"]=countryD[country]["armies"]+numberOfArmiesToPlace
         playerD[player]["armies"]=playerD[player]["armies"]-numberOfArmiesToPlace
         drawRectangle(t,countryD[country]["loc"][0],countryD[country]["loc"][1],31,15,countryD[country]["armies"],12,playerD[player]["color"],-3)
@@ -179,6 +182,7 @@ def findContinentsBonusBeginningOfTurn(player):
 
 def pickAttackTo(country,player):
     return eval("P"+str(player)).attackToCountry(player,countryD,bookArmiesBonusList,{player:playerD[player]},country)
+    #return playerModuleNames[player-1].attackToCountry(player,countryD,bookArmiesBonusList,{player:playerD[player]},country)
 
 def drawDice(t,aDice,dDice):
     t.up()
@@ -243,6 +247,7 @@ def attackNeighboringCountry(t,player):
     dT=cTurtle.Turtle()
     dT.ht()
     countryCaptured=False
+    #attackFrom=playerModuleNames[player-1].attackFromCountry(player,countryD,bookArmiesBonusList,{player:playerD[player]})
     attackFrom=eval("P"+str(player)).attackFromCountry(player,countryD,bookArmiesBonusList,{player:playerD[player]})
     print("Attacking from",attackFrom)
     while attackFrom != "NO ATTACK":
@@ -253,11 +258,13 @@ def attackNeighboringCountry(t,player):
         while continueAttack != "RETREAT" and countryD[attackTo]["armies"]>0 and countryD[attackFrom]["armies"]>1:
             rollDice(dT, player, attackFrom, defendingPlayer, attackTo)
             if countryD[attackTo]["armies"]>0 and countryD[attackFrom]["armies"]>1:
+                #continueAttack=playerModuleNames[player-1].continueAttack(player,countryD,bookArmiesBonusList,{player:playerD[player]})
                 continueAttack=eval("P"+str(player)).continueAttack(player,countryD,bookArmiesBonusList,{player:playerD[player]})
             dT.clear()
         if continueAttack != "RETREAT" and countryD[attackTo]["armies"]<=0:  #wiped out the enemy from a country
             print("\nYou took over "+attackTo+"!")
             howManyToMove=eval("P"+str(player)).tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,{player:playerD[player]},attackFrom)
+            #howManyToMove=playerModuleNames[player-1].tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,{player:playerD[player]},attackFrom)
             print("Moving",howManyToMove,"armies\n")
             countryD[attackFrom]["armies"]-=howManyToMove
             countryD[attackTo]["armies"]=howManyToMove
@@ -289,12 +296,14 @@ def attackNeighboringCountry(t,player):
         attackToCountryIndex=countryD[attackTo]["loc"]
         drawRectangle(t,attackFromCountryIndex[0],attackFromCountryIndex[1],31,15,countryD[attackFrom]["armies"],12,playerD[player]["color"],-3)
         drawRectangle(t,attackToCountryIndex[0],attackToCountryIndex[1],31,15,countryD[attackTo]["armies"],12,playerD[countryD[attackTo]["owner"]]["color"],-3)
+        #attackFrom=playerModuleNames[player-1].attackFromCountry(player,countryD,bookArmiesBonusList,{player:playerD[player]})
         attackFrom=eval("P"+str(player)).attackFromCountry(player,countryD,bookArmiesBonusList,{player:playerD[player]})
         print("Attacking from",attackFrom)
     return countryCaptured
 
 def troopMovement(player,t):
     fromCountry,toCountry,howManyToMove=eval("P"+str(player)).troopMove(player,countryD,bookArmiesBonusList,{player:playerD[player]})
+    #fromCountry,toCountry,howManyToMove=playerModuleNames[player-1].troopMove(player,countryD,bookArmiesBonusList,{player:playerD[player]})
     if fromCountry!="":
         countryD[fromCountry]["armies"]-=howManyToMove
         countryD[toCountry]["armies"]+=howManyToMove
@@ -340,6 +349,7 @@ def hasABook(player):
 def playBooks(player,t):
     bookArmies=0
     #Display the players cards with and index number beside them, also display a menu item to exit
+    #bookCardIndices=playerModuleNames[player-1].getBookCardIndices(player,countryD,bookArmiesBonusList,{player:playerD[player]})
     bookCardIndices=eval("P"+str(player)).getBookCardIndices(player,countryD,bookArmiesBonusList,{player:playerD[player]})
     print("INDICES",bookCardIndices)
     print("CARDS",playerD[player]["cards"])
