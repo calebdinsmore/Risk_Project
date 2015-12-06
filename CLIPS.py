@@ -53,7 +53,6 @@ class CLIPS(object):
             raise CLIPSError
 
     def deffacts(self, name, *facts):
-        print("(deffacts " + name + " ".join(facts) + ")")
         o = self.sendRecv("(deffacts " + name + " ".join(facts) + ")")
         if o:
             raise CLIPSError

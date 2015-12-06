@@ -3,7 +3,9 @@
 (deftemplate player-info (slot player) (slot armies) (multislot card-countries))
 (deftemplate card (slot country) (slot type))
 (deftemplate book-selection (multislot card-countries))
+(deftemplate continent (slot name) (multislot countries))
 
+;;; BOOK SELECTION
 (defrule choose-if-select-book
   ?bs <- (phase book-select)
   (bookArmiesBonusList ?current $?)
@@ -47,4 +49,17 @@
   (book-selection (card-countries ?c1 ?c2 ?c3))
   =>
   (format t "['%s', '%s', '%s']" ?c1 ?c2 ?c3)
+)
+
+;;; ARMY PLACEMENT
+
+(defrule choose-placement
+  ?p <- (phase army-placement)
+  (player-info (player ?pl) (armies ?a))
+  (country (name ?ourC) (owner ?pl))
+  (country (name ?theirC) (owner ?pl2&~?pl))
+  (adjacent-countries (country ?ourC) (adjacent-to $? ?theirC $?))
+  =>
+  (retract ?p)
+  (format t "'%s', %d" ?ourC ?a)
 )

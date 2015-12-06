@@ -5,10 +5,12 @@ class RiskPythonToCLIPS:
     def __init__(self):
         self.Clips = CLIPS()
         self.loadClipsFile()
+        self.translateContinentsToFacts()
+        self.translateAdjacentCountriesDToDeffacts()
+        self.reset()
 
     def loadClipsFile(self):
         self.Clips.load("AutoP1.clp")
-        self.Clips.reset()
 
     def printFacts(self):
         self.Clips.printFacts()
@@ -29,6 +31,12 @@ class RiskPythonToCLIPS:
             deffactString += " (%s (country %s) (adjacent-to %s)) " % ("adjacent-countries", country.replace(" ", "-"), " ".join([cntry.replace(" ", "-") for cntry in adjacentCountriesD[country]]))
         self.Clips.deffacts("adjacents", deffactString)
 
+    def translateContinentsToFacts(self):
+        deffactString = ""
+        for continent in continentD:
+            deffactString += " (%s (name %s) (countries %s)) " % ("continent", continent.replace(" ", "-"), " ".join([cntry.replace(" ", "-") for cntry in continentD[continent]]))
+        self.Clips.deffacts("continents", deffactString)
+
     def translateBookBonusToFact(self, bookArmiesBonusList):
         strBookArmiesList = []
         for num in bookArmiesBonusList:
@@ -45,18 +53,26 @@ class RiskPythonToCLIPS:
         playerFactString = "(player-info (player %s) (armies %s) (card-countries %s))" % (player, playerDMe[player]["armies"], cardCountryString)
         self.Clips.assertFact(playerFactString)
 
+    def translateCountryDToFacts(self, countryD):
+        for country in countryD:
+            factString = "(%s (name %s) (owner %s) (armies %s))" % ("country", country.replace(" ", "-"), countryD[country]["owner"], countryD[country]["armies"])
+            self.Clips.assertFact(factString)
+
     def initiateBookSelectionAndReturnList(self, bookArmiesBonusList, player, playerDMe):
         self.translateBookBonusToFact(bookArmiesBonusList)
         self.translatePlayerInfoToFact(player, playerDMe)
         self.Clips.assertFact("(phase book-select)")
         return eval(self.Clips.run())
 
-    def translateCountryDToFacts(self, countryD):
-        for country in countryD:
-            factString = "(%s (name %s) (owner %s) (armies %s))" % ("country", country.replace(" ", "-"), countryD[country]["owner"], countryD[country]["armies"])
-            self.Clips.assertFact(factString)
+    def initiateArmyPlacementAndReturn(self, countryD, player, playerDMe):
+        self.translatePlayerInfoToFact(player, playerDMe)
+        self.translateCountryDToFacts(countryD)
+        self.Clips.assertFact("(phase army-placement)")
+        return eval(self.Clips.run())
 
 #testPlayerDMe = {1:{"armies":30,"color":'green',"loc":(-350,257),"cards":[["test1", "artillery"], ["test2", "cavalry"], ["test3", "wild"]]}}
-testPlayerDMe = {1:{"armies":30,"color":'green',"loc":(-350,257),"cards":[["test1", "r"], ["test2", "r"], ["test3", "r"]]}}
-test = RiskPythonToCLIPS()
-test.initiateBookSelectionAndReturnList(['10'], 1, testPlayerDMe)
+#testPlayerDMe = {1:{"armies":30,"color":'green',"loc":(-350,257),"cards":[["test1", "r"], ["test2", "r"], ["test3", "r"]]}}
+#test = RiskPythonToCLIPS()
+#test.translateContinentsToFacts()
+#test.reset()
+#test.printFacts()

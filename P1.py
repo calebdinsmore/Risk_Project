@@ -232,6 +232,14 @@ def placeArmies(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
             else:
                 numberOfArmiesToPlace=0
     else: #AUTOMATIC
-        countryIndex=0
-        numberOfArmiesToPlace=playerDMe[player]["armies"]
+        #countryIndex=0
+        #numberOfArmiesToPlace=playerDMe[player]["armies"]
+        input("ENTER")
+        autoP1 = RiskPythonToCLIPS()
+        countryName, numberOfArmiesToPlace = autoP1.initiateArmyPlacementAndReturn(countryD, player, playerDMe)
+        autoP1.exit()
+        countryName = countryName.replace("-", " ") ##TODO: Put in better place
+        countryIndex = countryList.index(countryName)
+        print(countryName, countryIndex, numberOfArmiesToPlace)
+        input("ENTER")
     return countryList[countryIndex], numberOfArmiesToPlace
