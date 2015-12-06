@@ -67,8 +67,8 @@ class CLIPS(object):
     def reset(self):
         self.sendRecv("(reset)")
 
-    def run(self):
-        print(self.sendRecv("(run)"), end='')
+    def run(self, num=""):
+        return self.sendRecv("(run %s)" %(num))
 
     def facts(self):
         lines = self.sendRecv("(facts)").split("\n")[:-2]
@@ -91,6 +91,9 @@ class CLIPS(object):
 
     def load(self, name):
         self.sendRecv('(load "' + name + '")')
+
+    def exit(self):
+        self.send("(exit)")
 
 def validmessage(s):
     st = []
