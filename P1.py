@@ -1,4 +1,5 @@
 from riskStructs import *
+from RiskPythonToCLIPS import *
 import random
 
 def getPlayerCountryList(player,countryD):
@@ -43,7 +44,7 @@ def hasPickedABook(playerD,player,indexList):
         return True
     return False
 
-def attackFromCountry(player,countryD,bookArmiesBonusList,playerDMe,manual=True):
+def attackFromCountry(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     countryList=[]
     countList=[]
     for countryKey in countryD:
@@ -76,7 +77,7 @@ def attackFromCountry(player,countryD,bookArmiesBonusList,playerDMe,manual=True)
         else:
             return countryList[0]
 
-def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCountry,manual=True):
+def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCountry,manual=False):
     #given the country attacking from
     #get the list of attached countries
     possiblesList=[]
@@ -97,13 +98,13 @@ def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCoun
     else: #AUTOMATIC
         return possiblesList[0],countryD[possiblesList[0]]["owner"]
 
-def continueAttack(player,countryD,bookArmiesBonusList,playerDMe,manual=True):
+def continueAttack(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     if manual: #MANUAL
         return(input("Attack again? (Enter to attack, RETREAT and enter to end attack) => "))
     else: #AUTOMATIC
         return ""
-        
-def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=True):
+
+def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     print("IN PLAYER",player)
     listOfCardIndicesToPlay=[]
     if manual: #MANUAL
@@ -125,20 +126,24 @@ def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=True
                 listOfCardIndicesToPlay=[]
     else: #AUTOMATIC
         listOfCardIndicesToPlay=[]
-        while not hasPickedABook(playerDMe,player,listOfCardIndicesToPlay):
-            listOfCardIndicesToPlay=[]
-            listOfIndices=list(range(len(playerDMe[player]["cards"])))
-            for i in range(3):
-                listOfCardIndicesToPlay.append(listOfIndices.pop(random.randrange(0,len(listOfIndices))))    
+        autoP1 = RiskPythonToCLIPS()
+        listOfCountryNames = autoP1.initiateBookSelectionAndReturnList(bookArmiesBonusList, player, playerDMe)
+        autoP1.exit()
+        for country in listOfCountryNames:
+            for card in range(len(playerDMe[player]["cards"])):
+                if playerDMe[player]["cards"][card][0] == country.replace("-", " "):
+                    listOfCardIndicesToPlay.append(card)
+        print(listOfCardIndicesToPlay)
+
     return listOfCardIndicesToPlay
 
-def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,attackFrom,manual=True):
+def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,attackFrom,manual=False):
     if manual: #MANUAL
-        howManyToMove = input("\nHow many of the " + str(countryD[attackFrom]["armies"]-1) + " armies would you like to move? => ")    
+        howManyToMove = input("\nHow many of the " + str(countryD[attackFrom]["armies"]-1) + " armies would you like to move? => ")
         if howManyToMove=="":
             howManyToMove=countryD[attackFrom]["armies"]-1
         else:
-            howManyToMove=int(howManyToMove)                
+            howManyToMove=int(howManyToMove)
         while howManyToMove<1 or howManyToMove>countryD[attackFrom]["armies"]-1:
             print("Invalid number of armies to move!!")
             howManyToMove=input("How many of the " + str(countryD[attackFrom]["armies"]-1) + " armies would you like to move? => ")
@@ -150,7 +155,7 @@ def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,a
         howManyToMove=countryD[attackFrom]["armies"]-1
     return howManyToMove
 
-def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=True):
+def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     fromCountry=""
     toCountry=""
     howManyToMove=0
@@ -202,7 +207,7 @@ def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=True):
         pass
     return fromCountry,toCountry,howManyToMove
 
-def placeArmies(player,countryD,bookArmiesBonusList,playerDMe,manual=True):
+def placeArmies(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     print("PLAYER:",player)
     countryList=getPlayerCountryList(player,countryD)
     if manual: #MANUAL
