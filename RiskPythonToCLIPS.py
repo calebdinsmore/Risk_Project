@@ -51,6 +51,11 @@ class RiskPythonToCLIPS:
         self.Clips.assertFact("(phase book-select)")
         return eval(self.Clips.run())
 
+    def translateCountryDToFacts(self, countryD):
+        for country in countryD:
+            factString = "(%s (name %s) (owner %s) (armies %s))" % ("country", country.replace(" ", "-"), countryD[country]["owner"], countryD[country]["armies"])
+            self.Clips.assertFact(factString)
+
 #testPlayerDMe = {1:{"armies":30,"color":'green',"loc":(-350,257),"cards":[["test1", "artillery"], ["test2", "cavalry"], ["test3", "wild"]]}}
 testPlayerDMe = {1:{"armies":30,"color":'green',"loc":(-350,257),"cards":[["test1", "r"], ["test2", "r"], ["test3", "r"]]}}
 test = RiskPythonToCLIPS()
