@@ -63,3 +63,23 @@
   (retract ?p)
   (format t "'%s', %d" ?ourC ?a)
 )
+
+;;; TROOP MOVEMENT
+
+(defrule move-troops-end-of-turn
+  ?p <- (phase troop-movement)
+  (player-info (player ?pl) (armies ?a))
+  (country (name ?ourC) (owner ?pl) (armies ?countryA))
+  (adjacent-countries (country ?ourC) (adjacent-to $? ?theirC $?))
+  =>
+  (retract ?p)
+  (format t " '%s', '%s', %d " ?ourC ?theirC (/ ?countryA 2))
+)
+
+(defrule no-move
+  ?p <- (phase troop-movement)
+  ?nm <- (noMove)
+  =>
+  (retract ?p ?nm)
+  (printout t "0. NO TROOP MOVEMENT")
+)
